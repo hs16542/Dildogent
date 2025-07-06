@@ -1,0 +1,23 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="com.hs16542.dildogent.utils" >
+4
+5    <uses-sdk android:minSdkVersion="24" />
+6
+7    <!-- 网络权限 -->
+8    <uses-permission android:name="android.permission.INTERNET" />
+8-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:5:5-67
+8-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:5:22-64
+9    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+9-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:6:5-79
+9-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:6:22-76
+10
+11    <!-- 存储权限 -->
+12    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+12-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:9:5-81
+12-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:9:22-78
+13    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+13-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:10:5-80
+13-->/Users/mi/AndroidStudioProjects/Dildogent/utils/src/main/AndroidManifest.xml:10:22-77
+14
+15</manifest>

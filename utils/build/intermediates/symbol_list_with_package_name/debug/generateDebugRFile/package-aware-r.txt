@@ -1,0 +1,8 @@
+com.hs16542.dildogent.utils
+id btn_clear_dir
+id btn_extract_links
+id btn_extract_videos
+id btn_list_videos
+id example_text
+id log_output
+layout activity_video_extract_demo

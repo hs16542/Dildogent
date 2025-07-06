@@ -1,5 +1,6 @@
 package com.hs16542.dildogent
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -13,6 +14,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
 import com.hs16542.dildogent.databinding.ActivityMainBinding
+import com.hs16542.dildogent.utils.VideoExtractDemoActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -26,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab?.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null)
-                .setAnchorView(R.id.fab).show()
+            // 启动视频提取演示Activity
+            val intent = Intent(this, VideoExtractDemoActivity::class.java)
+            startActivity(intent)
         }
 
         val navHostFragment =

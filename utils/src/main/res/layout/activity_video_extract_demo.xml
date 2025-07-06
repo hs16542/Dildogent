@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".VideoExtractDemoActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="小红书视频提取工具"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="示例文本："
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/example_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="36 浏阳桨板烟花发布了一篇小红书笔记，快来看吧！ 😆 Fpbs13L2ZpLBTqy 😆 http://xhslink.com/a/sfg0VART9Spgb 复制本条信息，打开【小红书】App查看精彩内容！"
+        android:textSize="14sp"
+        android:background="#F5F5F5"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btn_extract_links"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="提取链接"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_extract_videos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="提取视频"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_list_videos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="查看已下载视频"
+        android:layout_marginBottom="8dp" />
+
+    <Button
+        android:id="@+id/btn_clear_dir"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="清理下载目录"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="日志输出："
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#F5F5F5">
+
+        <TextView
+            android:id="@+id/log_output"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="等待操作..."
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:padding="8dp" />
+
+    </ScrollView>
+
+</LinearLayout> 
