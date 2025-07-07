@@ -32,4 +32,5 @@ dependencyResolutionManagement {
 rootProject.name = "Dildogent"
 include(":app")
 include(":utils")
+include(":llmutil")
  

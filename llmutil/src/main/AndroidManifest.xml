@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 网络权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    
+    <!-- 音频录制权限 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    
+    <!-- 文件读写权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    
+    <!-- 麦克风权限 -->
+    <uses-permission android:name="android.permission.MICROPHONE" />
+
+    <application
+        android:allowBackup="true"
+        tools:targetApi="31">
+        
+        <!-- 视频情感分析Activity -->
+        <activity
+            android:name=".VideoEmotionAnalysisActivity"
+            android:exported="false"
+            android:label="视频情感分析" />
+            
+        <!-- LLMUtil演示Activity -->
+        <activity
+            android:name=".LLMUtilDemoActivity"
+            android:exported="false"
+            android:label="LLMUtil 演示" />
+            
+    </application>
+
+</manifest> 

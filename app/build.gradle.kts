@@ -36,6 +36,19 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/INDEX.LIST"
+            excludes += "META-INF/io.netty.versions.properties"
+            excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE"
+            excludes += "META-INF/LICENSE.txt"
+            excludes += "META-INF/NOTICE"
+            excludes += "META-INF/NOTICE.txt"
+        }
+    }
 }
 
 dependencies {
@@ -52,6 +65,9 @@ dependencies {
     
     // Utils模块依赖
     implementation(project(":utils"))
+    
+    // LLMUtil模块依赖
+    implementation(project(":llmutil"))
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

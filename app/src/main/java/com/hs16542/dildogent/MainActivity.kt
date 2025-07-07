@@ -15,6 +15,8 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.appcompat.app.AppCompatActivity
 import com.hs16542.dildogent.databinding.ActivityMainBinding
 import com.hs16542.dildogent.utils.VideoExtractDemoActivity
+import com.hs16542.dildogent.llmutil.VideoEmotionAnalysisActivity
+import com.hs16542.dildogent.llmutil.LLMUtilDemoActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,9 +30,8 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab?.setOnClickListener { view ->
-            // 启动视频提取演示Activity
-            val intent = Intent(this, VideoExtractDemoActivity::class.java)
-            startActivity(intent)
+            // 显示选择对话框
+            showFeatureSelectionDialog()
         }
 
         val navHostFragment =
@@ -85,5 +86,37 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+    
+    /**
+     * 显示功能选择对话框
+     */
+    private fun showFeatureSelectionDialog() {
+        val options = arrayOf("视频提取演示", "视频情感分析", "LLMUtil 演示")
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("选择功能")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        // 启动视频提取演示Activity
+                        val intent = Intent(this, VideoExtractDemoActivity::class.java)
+                        startActivity(intent)
+                    }
+                    1 -> {
+                        // 启动视频情感分析Activity
+                        val intent = Intent(this, VideoEmotionAnalysisActivity::class.java)
+                        startActivity(intent)
+                    }
+                    2 -> {
+                        // 启动LLMUtil演示Activity
+                        val intent = Intent(this, LLMUtilDemoActivity::class.java)
+                        startActivity(intent)
+                    }
+                }
+            }
+            .setNegativeButton("取消") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
     }
 }
