@@ -45,8 +45,8 @@ class VideoEmotionAnalyzer(private val context: Context) {
     private val _analysisState = MutableStateFlow<AnalysisState>(AnalysisState.Idle)
     val analysisState: StateFlow<AnalysisState> = _analysisState.asStateFlow()
     
-    private val _currentEmotion = MutableStateFlow<EmotionResult?>(null)
-    val currentEmotion: StateFlow<EmotionResult?> = _currentEmotion.asStateFlow()
+    private val _currentEmotion = MutableStateFlow<EmotionResultInternal?>(null)
+    val currentEmotion: StateFlow<EmotionResultInternal?> = _currentEmotion.asStateFlow()
     
     private val _transcriptionText = MutableStateFlow<String>("")
     val transcriptionText: StateFlow<String> = _transcriptionText.asStateFlow()
@@ -55,7 +55,7 @@ class VideoEmotionAnalyzer(private val context: Context) {
     private val audioProcessor = AudioProcessor()
     
     // LLM服务
-    val llmServiceInternal = LLMServiceInternal()
+    val llmServiceInternal = LLMServiceInternal(context)
     
     // 语音识别服务
     val speechRecognitionService = SpeechRecognitionService()
@@ -261,7 +261,8 @@ data class EmotionResult(
     val confidence: Float,         // 置信度
     val intensity: Float,          // 情感强度
     val keywords: List<String>,    // 关键词
-    val timestamp: Long            // 时间戳
+    val timestamp: Long,            // 时间戳
+    val modelType: String
 )
 
 /**
@@ -332,7 +333,7 @@ class LLMService {
     /**
      * 分析文本情感
      */
-    suspend fun analyzeEmotion(text: String): EmotionResult {
+    suspend fun analyzeEmotion(text: String): EmotionResultInternal {
         return withContext(Dispatchers.IO) {
             try {
                 // 这里应该调用实际的LLM API
@@ -340,7 +341,7 @@ class LLMService {
                 val emotions = listOf("喜悦", "悲伤", "愤怒", "恐惧", "惊讶", "厌恶", "中性")
                 val randomEmotion = emotions.random()
                 
-                EmotionResult(
+                EmotionResultInternal(
                     emotion = randomEmotion,
                     confidence = Random.nextDouble(0.7, 0.95).toFloat(),
                     intensity = Random.nextDouble(0.3, 0.9).toFloat(),
@@ -349,7 +350,7 @@ class LLMService {
                 )
             } catch (e: Exception) {
                 Log.e("LLMService", "情感分析失败", e)
-                EmotionResult(
+                EmotionResultInternal(
                     emotion = "中性",
                     confidence = 0.5f,
                     intensity = 0.5f,

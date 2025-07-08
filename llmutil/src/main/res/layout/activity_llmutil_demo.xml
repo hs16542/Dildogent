@@ -64,10 +64,22 @@
                 android:id="@+id/btnConfigureApi"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
                 android:text="配置API"
                 android:textSize="14sp" />
 
         </LinearLayout>
+
+        <!-- 离线模型演示按钮 -->
+        <Button
+            android:id="@+id/btnOfflineModelDemo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="离线模型演示"
+            android:textSize="16sp"
+            android:backgroundTint="@android:color/holo_blue_dark"
+            android:textColor="@android:color/white" />
 
         <!-- 状态显示 -->
         <TextView

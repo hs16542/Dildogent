@@ -46,6 +46,11 @@ class LLMUtilDemoActivity : AppCompatActivity() {
         binding.btnConfigureApi.setOnClickListener {
             showApiConfigurationDialog()
         }
+        
+        // 添加离线模型演示按钮
+        binding.btnOfflineModelDemo.setOnClickListener {
+            startOfflineModelDemo()
+        }
     }
     
     /**
@@ -117,7 +122,7 @@ class LLMUtilDemoActivity : AppCompatActivity() {
                 kotlinx.coroutines.delay(2000) // 2秒间隔
                 
                 // 模拟情感分析结果
-                val mockEmotion = EmotionResult(
+                val mockEmotion = EmotionResultInternal(
                     emotion = listOf("喜悦", "悲伤", "愤怒", "恐惧", "惊讶", "厌恶", "中性").random(),
                     confidence = Random.nextDouble(0.7, 0.95).toFloat(),
                     intensity = Random.nextDouble(0.3, 0.9).toFloat(),
@@ -161,7 +166,7 @@ class LLMUtilDemoActivity : AppCompatActivity() {
     /**
      * 更新情感显示
      */
-    private fun updateEmotionDisplay(emotion: EmotionResult?) {
+    private fun updateEmotionDisplay(emotion: EmotionResultInternal?) {
         emotion?.let { result ->
             binding.tvEmotion.text = "情感: ${result.emotion}"
             binding.tvConfidence.text = "置信度: ${(result.confidence * 100).toInt()}%"
@@ -203,6 +208,14 @@ class LLMUtilDemoActivity : AppCompatActivity() {
         binding.tvIntensity.text = "强度: --"
         binding.tvKeywords.text = "关键词: --"
         binding.tvTranscription.visibility = android.view.View.GONE
+    }
+    
+    /**
+     * 启动离线模型演示
+     */
+    private fun startOfflineModelDemo() {
+        val intent = android.content.Intent(this, OfflineModelDemoActivity::class.java)
+        startActivity(intent)
     }
     
     /**

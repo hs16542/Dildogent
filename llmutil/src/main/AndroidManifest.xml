@@ -33,6 +33,12 @@
             android:exported="false"
             android:label="LLMUtil 演示" />
             
+        <!-- 离线模型演示Activity -->
+        <activity
+            android:name=".OfflineModelDemoActivity"
+            android:exported="false"
+            android:label="离线模型演示" />
+            
     </application>
 
 </manifest> 

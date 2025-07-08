@@ -75,27 +75,21 @@ dependencies {
     // Material Design
     implementation("com.google.android.material:material:1.11.0")
     
-    // 离线模型支持
-    // TensorFlow Lite - 使用更稳定的版本
-    implementation("org.tensorflow:tensorflow-lite:2.13.0")
-    implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
-    implementation("org.tensorflow:tensorflow-lite-metadata:0.4.4")
-    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
-    // GPU委托插件在某些版本中可能不可用，使用可选依赖
-    // implementation("org.tensorflow:tensorflow-lite-gpu-delegate-plugin:2.13.0")
+    // 离线模型支持 - 最小化配置
+    // 只包含核心依赖，移除可能有问题的库
     
-    // ONNX Runtime - 使用稳定版本
+    // TensorFlow Lite - 核心功能
+    implementation("org.tensorflow:tensorflow-lite:2.12.0")
+    implementation("org.tensorflow:tensorflow-lite-support:0.4.2")
+    implementation("org.tensorflow:tensorflow-lite-metadata:0.4.2")
+    // 可选GPU支持
+    // implementation("org.tensorflow:tensorflow-lite-gpu:2.12.0")
+    
+    // ONNX Runtime - 核心功能
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.15.1")
     
-    // Hugging Face Transformers (通过ONNX) - 可选，可能不可用
-    // implementation("com.microsoft.onnxruntime:onnxruntime-extensions-android:1.15.1")
-    
-    // 文本处理 - 使用可用的库
-    // implementation("com.hankcs:hanlp:portable-1.8.4")
-    // implementation("org.lucee:jieba-analysis:1.0.3")
-    
     // 模型文件管理
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     
     // 测试依赖
     testImplementation(libs.junit)

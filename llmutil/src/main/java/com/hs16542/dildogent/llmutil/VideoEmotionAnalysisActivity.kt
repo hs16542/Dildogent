@@ -1,7 +1,6 @@
 package com.hs16542.dildogent.llmutil
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +9,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 
@@ -165,7 +163,8 @@ class VideoEmotionAnalysisActivity : AppCompatActivity() {
             videoEmotionAnalyzer.pausePlayback()
             binding.btnPlayPause.text = "播放"
         } else {
-            videoEmotionAnalyzer.resumePlayback()
+           // videoEmotionAnalyzer.resumePlayback()
+            videoEmotionAnalyzer.startPlaybackAndAnalysis()
             binding.btnPlayPause.text = "暂停"
         }
     }
@@ -239,7 +238,7 @@ class VideoEmotionAnalysisActivity : AppCompatActivity() {
     /**
      * 更新情感显示
      */
-    private fun updateEmotionDisplay(emotion: EmotionResult?) {
+    private fun updateEmotionDisplay(emotion: EmotionResultInternal?) {
         emotion?.let { result ->
             binding.tvEmotion.text = "情感: ${result.emotion}"
             binding.tvConfidence.text = "置信度: ${(result.confidence * 100).toInt()}%"

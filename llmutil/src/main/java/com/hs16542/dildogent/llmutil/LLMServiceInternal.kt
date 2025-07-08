@@ -13,9 +13,9 @@ import kotlin.random.Random
 
 /**
  * LLM服务接口
- * 支持多种LLM API的集成
+ * 支持多种LLM API的集成，包括在线API和离线模型
  */
-class LLMServiceInternal {
+class LLMServiceInternal(private val context: android.content.Context) {
     
     companion object {
         private const val TAG = "LLMService"
@@ -31,9 +31,15 @@ class LLMServiceInternal {
     
     private val gson = Gson()
     
+    // 离线模型管理器
+    private val offlineModelManager = OfflineModelManager(context)
+    
     // API密钥配置（实际使用时应该从配置文件或环境变量读取）
     private var openaiApiKey: String? = null
     private var baiduAccessToken: String? = null
+    
+    // 模型优先级配置
+    private var useOfflineModelFirst = false
     
     /**
      * 设置OpenAI API密钥
@@ -50,23 +56,81 @@ class LLMServiceInternal {
     }
     
     /**
+     * 设置是否优先使用离线模型
+     */
+    fun setUseOfflineModelFirst(useOfflineFirst: Boolean) {
+        this.useOfflineModelFirst = useOfflineFirst
+    }
+    
+    /**
+     * 加载TensorFlow Lite模型
+     */
+    suspend fun loadTensorFlowLiteModel(modelPath: String): Boolean {
+        return offlineModelManager.loadTensorFlowLiteModel(modelPath)
+    }
+    
+    /**
+     * 加载ONNX模型
+     */
+    suspend fun loadOnnxModel(modelPath: String): Boolean {
+        return offlineModelManager.loadOnnxModel(modelPath)
+    }
+    
+    /**
+     * 检查离线模型是否已加载
+     */
+    fun isOfflineModelLoaded(): Boolean {
+        return offlineModelManager.isModelLoaded()
+    }
+    
+    /**
+     * 获取当前离线模型类型
+     */
+    fun getCurrentOfflineModelType(): OfflineModelManager.Companion.ModelType? {
+        return offlineModelManager.getCurrentModelType()
+    }
+    
+    /**
      * 分析文本情感
      */
-    suspend fun analyzeEmotion(text: String): EmotionResult {
+    suspend fun analyzeEmotion(text: String): EmotionResultInternal {
         return withContext(Dispatchers.IO) {
             try {
-                // 优先使用OpenAI，如果没有配置则使用百度文心一言
+                // 根据配置选择分析方式
                 when {
-                    !openaiApiKey.isNullOrEmpty() -> analyzeEmotionWithOpenAI(text)
-                    !baiduAccessToken.isNullOrEmpty() -> analyzeEmotionWithBaidu(text)
+                    useOfflineModelFirst && offlineModelManager.isModelLoaded() -> {
+                        Log.d(TAG, "使用离线模型进行情感分析")
+                        offlineModelManager.analyzeEmotionOffline(text)
+                    }
+                    !openaiApiKey.isNullOrEmpty() -> {
+                        Log.d(TAG, "使用OpenAI API进行情感分析")
+                        analyzeEmotionWithOpenAI(text)
+                    }
+                    !baiduAccessToken.isNullOrEmpty() -> {
+                        Log.d(TAG, "使用百度文心一言进行情感分析")
+                        analyzeEmotionWithBaidu(text)
+                    }
+                    offlineModelManager.isModelLoaded() -> {
+                        Log.d(TAG, "使用离线模型进行情感分析（后备方案）")
+                        offlineModelManager.analyzeEmotionOffline(text)
+                    }
                     else -> {
-                        Log.w(TAG, "未配置LLM API密钥，使用模拟数据")
+                        Log.w(TAG, "未配置任何模型，使用模拟数据")
                         generateMockEmotionResult(text)
                     }
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "情感分析失败", e)
-                generateMockEmotionResult(text)
+                Log.e(TAG, "情感分析失败，尝试使用离线模型", e)
+                try {
+                    if (offlineModelManager.isModelLoaded()) {
+                        offlineModelManager.analyzeEmotionOffline(text)
+                    } else {
+                        generateMockEmotionResult(text)
+                    }
+                } catch (offlineException: Exception) {
+                    Log.e(TAG, "离线模型也失败，使用模拟数据", offlineException)
+                    generateMockEmotionResult(text)
+                }
             }
         }
     }
@@ -74,7 +138,7 @@ class LLMServiceInternal {
     /**
      * 使用OpenAI分析情感
      */
-    private suspend fun analyzeEmotionWithOpenAI(text: String): EmotionResult {
+    private suspend fun analyzeEmotionWithOpenAI(text: String): EmotionResultInternal {
         val prompt = """
             请分析以下中文文本的情感倾向，并返回JSON格式的结果：
             
@@ -122,12 +186,13 @@ class LLMServiceInternal {
                 try {
                     // 尝试解析JSON响应
                     val emotionData = gson.fromJson(content, EmotionData::class.java)
-                    return EmotionResult(
+                    return EmotionResultInternal(
                         emotion = emotionData.emotion,
                         confidence = emotionData.confidence,
                         intensity = emotionData.intensity,
                         keywords = emotionData.keywords,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        modelType = "OpenAI GPT"
                     )
                 } catch (e: Exception) {
                     Log.w(TAG, "解析OpenAI响应失败，使用文本解析", e)
@@ -142,7 +207,7 @@ class LLMServiceInternal {
     /**
      * 使用百度文心一言分析情感
      */
-    private suspend fun analyzeEmotionWithBaidu(text: String): EmotionResult {
+    private suspend fun analyzeEmotionWithBaidu(text: String): EmotionResultInternal {
         val prompt = """
             请分析以下中文文本的情感倾向：
             
@@ -176,12 +241,13 @@ class LLMServiceInternal {
             if (!content.isNullOrEmpty()) {
                 try {
                     val emotionData = gson.fromJson(content, EmotionData::class.java)
-                    return EmotionResult(
+                    return EmotionResultInternal(
                         emotion = emotionData.emotion,
                         confidence = emotionData.confidence,
                         intensity = emotionData.intensity,
                         keywords = emotionData.keywords,
-                        timestamp = System.currentTimeMillis()
+                        timestamp = System.currentTimeMillis(),
+                        modelType = "百度文心一言"
                     )
                 } catch (e: Exception) {
                     Log.w(TAG, "解析百度响应失败，使用文本解析", e)
@@ -196,7 +262,7 @@ class LLMServiceInternal {
     /**
      * 从文本中解析情感信息
      */
-    private fun parseEmotionFromText(llmResponse: String, originalText: String): EmotionResult {
+    private fun parseEmotionFromText(llmResponse: String, originalText: String): EmotionResultInternal {
         val emotionKeywords = mapOf(
             "喜悦" to listOf("开心", "快乐", "高兴", "兴奋", "愉快", "欢乐"),
             "悲伤" to listOf("难过", "伤心", "痛苦", "沮丧", "失望", "悲伤"),
@@ -221,28 +287,30 @@ class LLMServiceInternal {
             }
         }
         
-        return EmotionResult(
+        return EmotionResultInternal(
             emotion = detectedEmotion,
             confidence = maxConfidence.coerceAtLeast(0.3f),
             intensity = maxConfidence.coerceAtLeast(0.3f),
             keywords = extractKeywords(originalText),
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            modelType = "文本解析"
         )
     }
     
     /**
      * 生成模拟情感结果
      */
-    private fun generateMockEmotionResult(text: String): EmotionResult {
+    private fun generateMockEmotionResult(text: String): EmotionResultInternal {
         val emotions = listOf("喜悦", "悲伤", "愤怒", "恐惧", "惊讶", "厌恶", "中性")
         val randomEmotion = emotions.random()
         
-        return EmotionResult(
+        return EmotionResultInternal(
             emotion = randomEmotion,
             confidence = Random.nextDouble(0.7, 0.95).toFloat(),
             intensity = Random.nextDouble(0.3, 0.9).toFloat(),
             keywords = extractKeywords(text),
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            modelType = "模拟数据"
         )
     }
     
@@ -250,9 +318,19 @@ class LLMServiceInternal {
      * 提取关键词
      */
     private fun extractKeywords(text: String): List<String> {
-        // 简单的关键词提取逻辑
-        val words = text.split(" ", "，", "。", "！", "？", "、", "；", "：")
-        return words.filter { it.length > 1 && it.length <= 10 }.take(5)
+        // 简单的关键词提取逻辑 - 不依赖外部库
+        val words = text.split(" ", "，", "。", "！", "？", "、", "；", "：", "\n", "\t")
+        return words.filter { 
+            it.length > 1 && it.length <= 10 && 
+            !it.matches(Regex("^[\\s\\p{Punct}]+$")) // 过滤纯标点符号
+        }.take(5)
+    }
+    
+    /**
+     * 释放资源
+     */
+    fun release() {
+        offlineModelManager.release()
     }
 }
 
@@ -263,6 +341,15 @@ data class EmotionData(
     val confidence: Float,
     val intensity: Float,
     val keywords: List<String>
+)
+
+data class EmotionResultInternal(
+    val emotion: String,
+    val confidence: Float,
+    val intensity: Float,
+    val keywords: List<String>,
+    val timestamp: Long,
+    val modelType: String = "未知"
 )
 
 // OpenAI API 请求/响应类
